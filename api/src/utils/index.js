@@ -7,7 +7,15 @@ function validatePassword(password) {
     .is()
     .min(6) // Minimum length 6
     .is()
-    .max(100); // Maximum length 100
+    .max(100) // Maximum length 100
+    .has()
+    .uppercase(1) // Minimum 1 uppercase
+    .has()
+    .lowercase(1)
+    .has()
+    .symbols(1)
+    .has()
+    .digits(1);
 
   return schema.validate(password);
 }

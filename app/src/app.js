@@ -30,16 +30,22 @@ const App = () => {
     async function fetchData() {
       try {
         const res = await api.get("/user/signin_token");
-        if (!res.ok || !res.user) return setLoading(false);
-        if (res.token) api.setToken(res.token);
-        dispatch(setUser(res.user));
+        // if (!res.ok || !res.user) return setLoading(false);
+        if(res.ok && res.user) {
+          if (res.token) api.setToken(res.token);
+          dispatch(setUser(res.user));
+        }
+
       } catch (e) {
-        console.log(e);
+        console.log("Failed to fetch user data: ", e);
+      } finally {
+        // Arrêter le chargement en cas d'échec
+        setLoading(false);
       }
-      setLoading(false);
+
     }
     fetchData();
-  }, []);
+  }, [dispatch]);
 
   if (loading) return <Loader />;
 
@@ -71,8 +77,12 @@ const App = () => {
 
 const RestrictedRoute = ({ component: Component, role, ...rest }) => {
   const user = useSelector((state) => state.Auth.user);
-  if (!user) return <Redirect to={{ pathname: "/auth" }} />;
-  return <Route {...rest} render={(props) => (user ? <Component {...props} /> : <Redirect to={{ pathname: "/auth" }} />)} />;
+
+  // Ajout du state pour conserver la page précédente afin de rediriger vers celle-ci après la connexion
+  return <Route {...rest}
+                render={(props) =>
+                    (user ? <Component {...props} /> :
+                        <Redirect to={{ pathname: "/auth", state: props.location }} />)} />;
 };
 
 export default App;

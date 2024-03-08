@@ -14,3 +14,31 @@ export function formatDate(date) {
     year: "numeric",
   });
 }
+
+const passwordValidator = require("password-validator");
+
+export function validatePassword(password) {
+  const schema = new passwordValidator();
+  schema
+      .is()
+      .min(6) // Minimum length 6
+      .is()
+      .max(100) // Maximum length 100
+      .has()
+      .uppercase(1) // Minimum 1 uppercase
+      .has()
+      .lowercase(1)
+      .has()
+      .symbols(1)
+      .has()
+      .digits(1);
+
+  console.log('is valid', schema.validate(password));
+  const checkPassword = schema.validate(password);
+
+  return checkPassword === true ? {valid: true} :
+      {valid: false, error: "Password must contain a minimum of 8 characters with at least one uppercase " +
+            "one lowercase one special character and one number"}
+}
+
+

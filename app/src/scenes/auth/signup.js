@@ -9,6 +9,7 @@ import { setUser } from "../../redux/auth/actions";
 
 import LoadingButton from "../../components/loadingButton";
 import api from "../../services/api";
+import {validatePassword} from "../../utils";
 
 export default () => {
   const dispatch = useDispatch();
@@ -24,6 +25,13 @@ export default () => {
         initialValues={{ username: "", organisation: "", password: "" }}
         onSubmit={async (values, actions) => {
           try {
+            // Check password
+              console.log(values.password);
+            const checkPassword = validatePassword(values.password);
+            if(!checkPassword.valid) {
+                toast.error(checkPassword.error);
+                return
+            }
             const { user, token } = await api.post(`/user/signup`, values);
             if (token) api.setToken(token);
             if (user) dispatch(setUser(user));
